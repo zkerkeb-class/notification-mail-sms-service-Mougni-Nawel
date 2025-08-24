@@ -2,7 +2,7 @@ module.exports = {
   testEnvironment: "node",
   setupFilesAfterEnv: ["<rootDir>/__tests__/setup.js"],
   testMatch: ["<rootDir>/__tests__/**/*.test.js"],
-  collectCoverage: true, // ✅ Activer la collecte
+  collectCoverage: true,
   collectCoverageFrom: [
     "src/**/*.js",
     "!__tests__/**",
@@ -12,7 +12,7 @@ module.exports = {
     "!src/config/**",
     "!src/utils/**",
   ],
-  coverageReporters: ["text", "lcov"], // ✅ Affiche dans le terminal + HTML
+  coverageReporters: ["text", "lcov"],
   clearMocks: true,
   resetMocks: true,
   verbose: true,
