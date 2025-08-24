@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const EmailService = require('../../src/services/email.service');
+const emailService = require('../../src/services/email.service');
 
 jest.mock('../../src/templates/email.template', () => ({
   generateWelcomeTemplate: jest.fn().mockReturnValue('<html>Mock Welcome</html>'),
@@ -7,7 +7,6 @@ jest.mock('../../src/templates/email.template', () => ({
 }));
 
 describe('EmailService', () => {
-  let emailService;
   let mockTransporter;
 
   beforeAll(() => {
@@ -29,8 +28,7 @@ describe('EmailService', () => {
     };
 
     nodemailer.createTransport = jest.fn().mockReturnValue(mockTransporter);
-    
-    emailService = new EmailService();
+    emailService.setTransporter(mockTransporter);
   });
 
   describe('sendEmail', () => {
@@ -42,16 +40,6 @@ describe('EmailService', () => {
       };
 
       const result = await emailService.sendEmail(mailOptions);
-
-      expect(nodemailer.createTransport).toHaveBeenCalledWith({
-        host: 'smtp.example.com',
-        port: '587',
-        secure: false,
-        auth: {
-          user: 'test@example.com',
-          pass: 'password'
-        }
-      });
 
       expect(mockTransporter.sendMail).toHaveBeenCalledWith(mailOptions);
       expect(result).toEqual({

@@ -2,12 +2,13 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "deploy" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
   build-and-test:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
@@ -39,9 +40,26 @@ jobs:
         if: hashFiles('__tests__/**') != ''
         run: npm test -- --watchAll=false
 
+  deploy:
+    if: github.ref == 'refs/heads/deploy'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Créer .env.dev pour le deploy
+        run: |
+          touch .env.dev
+          echo "PORT=${{ secrets.PORT }}" >> .env.dev
+          echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> .env.dev
+          echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env.dev
+          echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> .env.dev
+          echo "SMTP_PASS=${{ secrets.SMTP_PASS }}" >> .env.dev
+          echo "SMTP_FROM=${{ secrets.SMTP_FROM }}" >> .env.dev
+          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env.dev
+
       - name: Set lowercase Docker user
         run: echo "DOCKER_USER=$(echo ${{ github.actor }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
 
       - name: Build Docker image
         run: |
@@ -57,3 +75,5 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ghcr.io/${{ env.DOCKER_USER }}/notif:latest
+
+      
