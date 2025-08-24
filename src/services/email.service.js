@@ -14,6 +14,10 @@ class EmailService {
     });
   }
 
+  setTransporter(transporter) {
+    this.transporter = transporter;
+  }
+
   async sendEmail(mailOptions) {
     try {
       const info = await this.transporter.sendMail(mailOptions);
@@ -68,4 +72,4 @@ class EmailService {
   }
 }
 
-module.exports = EmailService;
+module.exports = new EmailService();
